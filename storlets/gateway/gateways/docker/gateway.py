@@ -18,6 +18,7 @@ import os
 import shutil
 
 from storlets.agent.common.utils import DEFAULT_PY2, DEFAULT_PY3
+from storlets.agent.common.utils import start_timer, end_timer
 from storlets.gateway.common.stob import StorletRequest
 from storlets.gateway.gateways.base import StorletGatewayBase
 from storlets.gateway.gateways.docker.runtime import RunTimePaths, \

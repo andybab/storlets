@@ -14,6 +14,7 @@
 # limitations under the License.
 import json
 import os
+from storlets.agent.common.utils import start_timer, end_timer
 from storlets.sbus import SBus
 from storlets.sbus.command import SBUS_CMD_CANCEL, SBUS_CMD_DAEMON_STATUS, \
     SBUS_CMD_HALT, SBUS_CMD_PING, SBUS_CMD_START_DAEMON, \
@@ -64,7 +65,11 @@ class SBusClient(object):
                     command,
                     [SBusFileDescriptor(SBUS_FD_SERVICE_OUT, write_fd)],
                     params, task_id)
+
+                start_timer("_request SBus.send")
                 rc = SBus.send(self.socket_path, datagram)
+                end_timer(self.logger, "_request SBus.send")
+
                 if rc < 0:
                     raise SBusClientSendError(
                         'Faild to send command(%s) to socket %s' %

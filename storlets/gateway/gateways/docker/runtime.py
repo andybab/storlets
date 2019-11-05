@@ -36,6 +36,7 @@ from storlets.gateway.common.exceptions import StorletRuntimeException, \
     StorletTimeout
 from storlets.gateway.common.logger import StorletLogger
 from storlets.gateway.common.stob import StorletResponse
+from storlets.agent.common.utils import start_timer, end_timer
 
 MAX_METADATA_SIZE = 4096
 
