@@ -228,7 +228,7 @@ class RunTimeSandbox(object):
 
         # TODO(add line in conf)
         self.storlet_daemon_thread_pool_size = \
-            int(conf.get('storlet_daemon_thread_pool_size', 5))
+            int(conf.get('storlet_daemon_thread_pool_size', 128))
         self.storlet_daemon_debug_level = \
             conf.get('storlet_daemon_debug_level', 'DEBUG')
 
@@ -735,7 +735,9 @@ class StorletInvocationProtocol(object):
 
     def communicate(self):
         try:
+            start_timer("communicate _invoke")
             self._invoke()
+            end_timer(self.logger, "communicate _invoke")
 
             if not self.srequest.has_fd:
                 self._wait_for_write_with_timeout(self._input_data_write_fd)

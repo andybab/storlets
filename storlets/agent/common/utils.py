@@ -13,11 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import time
 from logging.handlers import SysLogHandler
 
 DEFAULT_PY2 = 2.7
 DEFAULT_PY3 = 3.5
 
+TIMER_DICT = {}
+
+def start_timer(timer_name):
+    TIMER_DICT[timer_name] = time.time()
+
+def end_timer(logger, timer_name):
+    logger.info("---------> {} TRACE_TIME=({})".format(timer_name, time.time() - TIMER_DICT.get(timer_name, 0)))
 
 def get_logger(logger_name, log_level, container_id):
     """

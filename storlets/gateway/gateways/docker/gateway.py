@@ -207,9 +207,17 @@ class StorletGatewayDocker(StorletGatewayBase):
                                     container as data source
         :return: StorletResponse instance
         """
+        start_timer("invocation_flow run_time_sbox")
         run_time_sbox = RunTimeSandbox(self.scope, self.conf, self.logger)
+        end_timer(self.logger, "invocation_flow run_time_sbox")
+
+        start_timer("invocation_flow docker_updated")
         docker_updated = self.update_docker_container_from_cache(sreq)
+        end_timer(self.logger, "invocation_flow docker_updated")
+
+        start_timer("invocation_flow activate_storlet_daemon")
         run_time_sbox.activate_storlet_daemon(sreq, docker_updated)
+        end_timer(self.logger, "invocation_flow activate_storlet_daemon")
         self._add_system_params(sreq)
 
         slog_path = self.paths.get_host_slog_path(sreq.storlet_main)
