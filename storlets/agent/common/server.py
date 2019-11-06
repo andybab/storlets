@@ -17,6 +17,7 @@ import json
 import os
 
 from storlets.sbus import SBus
+from storlets.agent.common.utils import  start_timer, end_timer
 import storlets.sbus.command as sbus_cmd
 
 EXIT_SUCCESS = 0
@@ -105,8 +106,13 @@ class SBusServer(object):
         self.logger.debug("Received command %s" % command)
 
         try:
+            start_timer("dispatch_command get_handler")
             handler = self.get_handler(command)
+            end_timer(self.logger, "dispatch_command get_handler")
+
+            start_timer("dispatch_command handler(dtg)")
             resp = handler(dtg)
+            end_timer(self.logger, "dispatch_command handler(dtg)")
         except ValueError as err:
             self.logger.error(err.message)
             resp = CommandFailure(str(err))
@@ -120,9 +126,11 @@ class SBusServer(object):
                          (command, resp.report_message))
 
         try:
+            start_timer("dispatch_command dtg.service_out_fd")
             outfd = dtg.service_out_fd
             with os.fdopen(outfd, 'w') as outfile:
                 self._respond(outfile, resp)
+            end_timer(self.logger, "dispatch_command dtg.service_out_fd")
         except AttributeError:
             # TODO(takashi): Currently we return response via service out fd
             #                only for service commands, but to be more
@@ -140,7 +148,9 @@ class SBusServer(object):
         :param resp: CommandResponse instance
         """
         try:
+            start_timer("_respond outfile.write")
             outfile.write(resp.report_message)
+            end_timer(self.logger, "_respond outfile.write")
         except IOError:
             self.logger.exception('Unable to return response to client')
 
@@ -169,7 +179,9 @@ class SBusServer(object):
             return EXIT_FAILURE
 
         while True:
+            start_timer("main_loop sbus.listen")
             rc = sbus.listen(fd)
+            end_timer(self.logger, "main_loop sbus.listen")
             if rc < 0:
                 self.logger.error("Failed to wait on SBus. exiting.")
                 return EXIT_FAILURE

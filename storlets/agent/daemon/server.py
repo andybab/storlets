@@ -23,7 +23,7 @@ import importlib
 from storlets.sbus import SBus
 from storlets.agent.common.server import command_handler, EXIT_FAILURE, \
     CommandSuccess, CommandFailure, SBusServer
-from storlets.agent.common.utils import get_logger
+from storlets.agent.common.utils import get_logger, start_timer, end_timer
 from storlets.agent.daemon.files import StorletInputFile, \
     StorletRangeInputFile, StorletOutputFile, StorletLogger
 
@@ -168,8 +168,10 @@ class StorletDaemon(SBusServer):
         out_fds = dtg.object_out_fds
         logger_fd = dtg.logger_out_fd
 
+        start_timer("execute os.fork")
         pid = os.fork()
         if pid:
+            end_timer(self.logger, "execute os.fork")
             self.logger.debug('Create a subprocess %d for task %s' %
                               (pid, task_id))
             self.task_id_to_pid[task_id] = pid

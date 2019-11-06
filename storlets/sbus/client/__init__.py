@@ -66,9 +66,7 @@ class SBusClient(object):
                     [SBusFileDescriptor(SBUS_FD_SERVICE_OUT, write_fd)],
                     params, task_id)
 
-                start_timer("_request SBus.send")
                 rc = SBus.send(self.socket_path, datagram)
-                end_timer(self.logger, "_request SBus.send")
 
                 if rc < 0:
                     raise SBusClientSendError(
